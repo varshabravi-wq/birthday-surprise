@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday! 🎂</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #ec4899;
+      --accent-hover: #db2777;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Lock Screen Styles */
+    #lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .lock-card {
+      background: var(--card);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      max-width: 380px;
+      width: 100%;
+    }
+
+    .lock-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .hint {
+      color: var(--subtext);
+      font-size: 0.9rem;
+      margin: 10px 0 20px;
+    }
+
+    .pin-display {
+      letter-spacing: 10px;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      min-height: 40px;
+      color: var(--accent);
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .key {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .key:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .key.action {
+      font-size: 0.9rem;
+      background: rgba(236, 72, 153, 0.2);
+    }
+
+    .error-msg {
+      color: #ef4444;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      height: 20px;
+    }
+
+    /* Secret Content Styles */
+    #main-content {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    section {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    section h2 {
+      margin-bottom: 15px;
+      color: var(--accent);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 8px;
+    }
+
+    /* Gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .photo-card {
+      background: #ffffff;
+      padding: 10px 10px 25px 10px;
+      border-radius: 8px;
+      transform: rotate(-2deg);
+      transition: transform 0.3s;
+    }
+
+    .photo-card:nth-child(even) {
+      transform: rotate(2deg);
+    }
+
+    .photo-card:hover {
+      transform: scale(1.05) rotate(0deg);
+      z-index: 10;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .photo-card p {
+      color: #333;
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline-item {
+      position: relative;
+      padding-left: 20px;
+      border-left: 2px solid var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .timeline-item h3 {
+      font-size: 1.1rem;
+    }
+
+    .timeline-item span {
+      font-size: 0.8rem;
+      color: var(--subtext);
+    }
+
+    /* Letter Section */
+    .letter {
+      line-height: 1.7;
+      color: #e2e8f0;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div id="lock-screen">
+    <div class="lock-card">
+      <div class="lock-icon">🔒</div>
+      <h2>Secret Birthday Vault</h2>
+      <p class="hint">Hint: Enter our special secret passkey!</p>
+      
+      <div class="pin-display" id="pin-display">••••</div>
+      
+      <div class="keypad">
+        <button class="key" onclick="press('1')">1</button>
+        <button class="key" onclick="press('2')">2</button>
+        <button class="key" onclick="press('3')">3</button>
+        <button class="key" onclick="press('4')">4</button>
+        <button class="key" onclick="press('5')">5</button>
+        <button class="key" onclick="press('6')">6</button>
+        <button class="key" onclick="press('7')">7</button>
+        <button class="key" onclick="press('8')">8</button>
+        <button class="key" onclick="press('9')">9</button>
+        <button class="key action" onclick="clearPin()">C</button>
+        <button class="key" onclick="press('0')">0</button>
+        <button class="key action" onclick="checkPin()">OK</button>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+  </div>
+
+  <!-- MAIN SECRET WEBSITE -->
+  <div id="main-content">
+    <header>
+      <h1>🎉 Happy Birthday, My Love! ❤️</h1>
+      <p>You unlocked your secret birthday page!</p>
+    </header>
+
+    <!-- MEMORY TIMELINE -->
+    <section>
+      <h2>📍 Our Journey</h2>
+      <div class="timeline-item">
+        <span>Day 1</span>
+        <h3>The First Time We Met</h3>
+        <p>A short note about where and how you met.</p>
+      </div>
+      <div class="timeline-item">
+        <span>Favorite Date</span>
+        <h3>Our First Big Trip Together</h3>
+        <p>Highlight a special trip or memory you cherish.</p>
+      </div>
+    </section>
+
+    <!-- PHOTO GALLERY -->
+    <section>
+      <h2>📸 Favorite Memories</h2>
+      <div class="gallery">
+        <div class="photo-card">
+          <img src="https://picsum.photos/300/300?random=1" alt="Memory 1" />
+          <p>Cutest Day ❤️</p>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/300/300?random=2" alt="Memory 2" />
+          <p>Best Date 🍦</p>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/300/300?random=3" alt="Memory 3" />
+          <p>Unforgettable ✨</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BIRTHDAY LETTER -->
+    <section>
+      <h2>💌 My Letter To You</h2>
+      <div class="letter">
+        Dear Birthday Boy,
+
+        Writing this letter to tell you how incredibly special you are to me. Thank you for all the laughter, happiness, and incredible memories we share together.
+
+        I hope this year brings you as much joy as you bring into my life every single day!
+
+        Happy Birthday! ❤️
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 🔑 CHANGE YOUR SECRET PIN HERE
+    const SECRET_PIN = "2007"; 
+
+    let enteredPin = "";
+
+    function updateDisplay() {
+      const display = document.getElementById("pin-display");
+      display.innerText = "•".repeat(enteredPin.length) || "••••";
+    }
+
+    function press(num) {
+      if (enteredPin.length < 6) {
+        enteredPin += num;
+        updateDisplay();
+      }
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      document.getElementById("error-msg").innerText = "";
+      updateDisplay();
+    }
+
+    function checkPin() {
+      if (enteredPin === SECRET_PIN) {
+        document.getElementById("lock-screen").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+      } else {
+        document.getElementById("error-msg").innerText = "Wrong Passkey! Try again 🔑";
+        clearPin();
+      }
+    }
+  </script>
+</body>
+</html>
